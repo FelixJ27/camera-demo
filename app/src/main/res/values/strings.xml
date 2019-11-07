@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">test</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="hint_username">用户名</string>
+    <string name="hint_password">密码</string>
+    <string name="hint_ip">请输入服务器IP或域名</string>
+    <string name="hint_port">请输入服务器端口</string>
+
+    <string name="text_function">选择功能</string>
+
+    <string name="button_login">登录</string>
+    <string name="button_settings">设置</string>
+    <string name="button_save">保存</string>
+    <string name="button_ok">确定</string>
+    <string name="button_cancel">取消</string>
+    <string name="button_photograph">拍照</string>
+    <string name="button_video">录像</string>
+    <string name="button_photo_album">从相册选择</string>
+
+    <string name="tips_confirm_exit_by_back">再按一次返回键退出</string>
+    <string name="tips_required_quantity">请输入数量</string>
+    <string name="tips_required_finish_quantity">请输入备货数量</string>
+    <string name="tips_required_df_bin_code">请输入待发区仓位号</string>
+    <string name="tips_required_bin_code">请输入仓位编号</string>
+    <string name="tips_required_wb_code">工位编号不能为空</string>
+    <string name="tips_required_pod_num">货架数量不能为空</string>
+    <string name="tips_required_pod_type">货架类型不能为空</string>
+    <string name="tips_required_tray_code">请输入容器编号</string>
+    <string name="tips_required_username">请输入用户名</string>
+    <string name="tips_required_password">请输入密码</string>
+    <string name="tips_required_order_num">请输入入库单编号</string>
+    <string name="tips_required_server_config">请配置服务器信息</string>
+    <string name="tips_error_bin_code">无效的仓位码</string>
+    <string name="tips_error_network">请检查网络</string>
+    <string name="tips_success_in_stock">入库成功</string>
+    <string name="tips_success_out_stock">出库成功</string>
+    <string name="tips_success_stock_transfer">移库成功</string>
+    <string name="tips_success_call_pod">呼叫货架成功</string>
+    <string name="tips_success_stop_call_pod">停止呼叫货架成功</string>
+    <string name="tips_success_return_pod">货架回库成功</string>
+    <string name="tips_success_send_pod_to_factory">产线搬运成功</string>
+
+</resources>
