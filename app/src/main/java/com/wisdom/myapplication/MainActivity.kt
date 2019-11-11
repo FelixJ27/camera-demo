@@ -15,10 +15,10 @@ import android.view.View
 import java.io.*
 
 class MainActivity : AppCompatActivity() {
-    lateinit var btnPhotograph: Button
-    lateinit var btnVideo: Button
-    lateinit var btnPhotoAlbum: Button
-    lateinit var btnCancel: Button
+    private lateinit var btnPhotograph: Button
+    private lateinit var btnVideo: Button
+    private lateinit var btnPhotoAlbum: Button
+    private lateinit var btnCancel: Button
     private val REQUEST_CAMERA = 1
     private lateinit var mFilePath: String
     private var bitmap: Bitmap? = null
@@ -36,11 +36,12 @@ class MainActivity : AppCompatActivity() {
         btnCancel = findViewById(R.id.btnCancel)
 
         btnPhotograph.setOnClickListener {
-            open(btnPhotograph)
+            //open(btnPhotograph)
+            toAddPhotoActivity()
         }
 
         btnVideo.setOnClickListener {
-            open(btnVideo)
+            toAddVideoActivity()
         }
 
         btnPhotoAlbum.setOnClickListener {
@@ -48,7 +49,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun open(view: View) {
+    private fun toAddPhotoActivity() {
+        startActivity(Intent(this@MainActivity, AddPhotoActivity::class.java))
+    }
+
+    private fun toAddVideoActivity() {
+        startActivity(Intent(this@MainActivity, AddVideoActivity::class.java))
+    }
+
+    private fun open(view: View) {
         var intent = Intent()
         when (view.id) {
             R.id.btnPhotograph -> {
@@ -72,9 +81,9 @@ class MainActivity : AppCompatActivity() {
                 try {
                     fis = FileInputStream(mFilePath) // 根据路径获取数据
                     bitmap = BitmapFactory.decodeStream(fis)    //获取图片
-
+                    //bitmap = ImageThumbnail().getImageThumbnail(mFilePath, 50, 50)
                     Thread(Runnable { intentBitmap() }).start()
-                    val intent = Intent(this@MainActivity, AddActivity::class.java)
+                    val intent = Intent(this@MainActivity, AddPhotoActivity::class.java)
                     startActivity(intent)
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()

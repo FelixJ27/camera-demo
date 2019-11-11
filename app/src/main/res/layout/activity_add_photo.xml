@@ -5,7 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AddActivity">
+    tools:context=".AddPhotoActivity">
+
+    <util.HeaderBar
+        style="@style/MatchWrap"
+        app:isRightShow="false"
+        app:isShowBack="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="最多可添加6张照片"
+        android:textColor="@color/common_red"
+        android:textSize="@dimen/text_size" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,20 +28,17 @@
             android:id="@+id/img1"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@color/black" />
+            android:src="@drawable/icon_add" />
 
         <ImageView
             android:id="@+id/img2"
             android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black"
-            android:src="@drawable/add" />
+            android:layout_height="80dp" />
 
         <ImageView
             android:id="@+id/img3"
             android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
+            android:layout_height="80dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -40,43 +49,21 @@
         <ImageView
             android:id="@+id/img4"
             android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
+            android:layout_height="80dp" />
 
         <ImageView
             android:id="@+id/img5"
             android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
+            android:layout_height="80dp" />
 
         <ImageView
             android:id="@+id/img6"
             android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
+            android:layout_height="80dp" />
     </LinearLayout>
 
-    <LinearLayout
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/img7"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
-
-        <ImageView
-            android:id="@+id/img8"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
-
-        <ImageView
-            android:id="@+id/img9"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/black" />
-    </LinearLayout>
+        android:text="@string/button_ok" />
 </LinearLayout>

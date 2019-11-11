@@ -18,6 +18,8 @@
     <string name="button_photograph">拍照</string>
     <string name="button_video">录像</string>
     <string name="button_photo_album">从相册选择</string>
+    <string name="button_add_photo">添加照片</string>
+    <string name="button_add_video">添加录像</string>
 
     <string name="tips_confirm_exit_by_back">再按一次返回键退出</string>
     <string name="tips_required_quantity">请输入数量</string>
