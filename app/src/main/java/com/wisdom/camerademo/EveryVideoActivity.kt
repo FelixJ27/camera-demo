@@ -1,6 +1,5 @@
-package com.wisdom.myapplication
+package com.wisdom.camerademo
 
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView

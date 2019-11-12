@@ -1,4 +1,4 @@
-package com.wisdom.myapplication.service
+package com.wisdom.`camera-demo`.service
 
 /**
  *@description:

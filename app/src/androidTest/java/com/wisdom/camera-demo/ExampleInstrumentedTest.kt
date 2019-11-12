@@ -1,4 +1,4 @@
-package com.wisdom.myapplication
+package com.wisdom.`camera-demo`
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

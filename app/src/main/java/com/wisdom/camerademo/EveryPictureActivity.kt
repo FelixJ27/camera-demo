@@ -1,4 +1,4 @@
-package com.wisdom.myapplication
+package com.wisdom.camerademo
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.util.Base64
 import android.widget.ImageView
 import android.widget.TextView
+import com.wisdom.camerademo.AddPhotoActivity
+import com.wisdom.camerademo.R
 import java.io.ByteArrayInputStream
 
 /**
@@ -16,7 +18,7 @@ import java.io.ByteArrayInputStream
  *@author: Felix J
  *@time: 2019/11/7 11:34
  */
-class EveryoneActivity : AppCompatActivity() {
+class EveryPictureActivity : AppCompatActivity() {
 
     private lateinit var img: ImageView
     private lateinit var imgDel: ImageView
@@ -28,7 +30,6 @@ class EveryoneActivity : AppCompatActivity() {
 
         val index = intent.getIntExtra("index", 0)
         val totalCount = intent.getIntExtra("totalCount", 0)
-        //val bitmap:Bitmap = intent.getParcelableExtra("bitmap")
         imgDel = findViewById(R.id.mRightIv)
         imgDel.setImageResource(R.drawable.icon_rubbish)
 
@@ -40,7 +41,7 @@ class EveryoneActivity : AppCompatActivity() {
             //toAddPhotoActivity()
         }
         getPicture()
-        //img.setImageBitmap(bitmap)
+
     }
 
     private fun getPicture() {
@@ -56,7 +57,7 @@ class EveryoneActivity : AppCompatActivity() {
     }
 
     private fun returnToAddPhotoActivity() {
-        val intent = Intent(this@EveryoneActivity, AddPhotoActivity::class.java)
+        val intent = Intent(this@EveryPictureActivity, AddPhotoActivity::class.java)
         startActivity(intent)
     }
 }

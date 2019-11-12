@@ -1,4 +1,4 @@
-package com.wisdom.myapplication
+package com.wisdom.camerademo
 
 import android.content.Intent
 import android.graphics.Bitmap

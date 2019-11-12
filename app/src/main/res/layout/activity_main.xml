@@ -31,11 +31,11 @@
             android:text="@string/button_video" />
     </LinearLayout>
 
-    <Button
+   <!-- <Button
         android:id="@+id/btnPhotoAlbum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_photo_album" />
+        android:text="@string/button_photo_album" />-->
 
     <Button
         android:id="@+id/btnCancel"

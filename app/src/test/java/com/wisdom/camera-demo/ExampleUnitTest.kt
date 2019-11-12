@@ -1,4 +1,4 @@
-package com.wisdom.myapplication
+package com.wisdom.`camera-demo`
 
 import org.junit.Test
 

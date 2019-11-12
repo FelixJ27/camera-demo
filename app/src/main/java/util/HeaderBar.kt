@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import com.wisdom.myapplication.R
+import com.wisdom.camerademo.R
 
 
 import kotlinx.android.synthetic.main.layout_header_bar.view.*
