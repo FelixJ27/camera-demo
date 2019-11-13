@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Picture
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import util.ImageUtil
 import java.io.*
 
 /**
@@ -43,15 +45,17 @@ class AddPhotoActivity : AppCompatActivity() {
     private val REQUEST_CAMERA = 1
     private val SELECT_PHOTO = 0
     private lateinit var cameraDialog: Dialog
-    //private var cameraBuilder: Dialog.Builder? = null
-    private lateinit var cameraView: View
+    private var photoIndex = 0
+    private var preparedPictureList: ArrayList<String> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_photo)
 
-        mFilePath = Environment.getExternalStorageDirectory().path // 获取SD卡路径
-        mFilePath = "$mFilePath/temp.png"// 指定路径
+        val index = intent.getIntExtra("index", 0)
+        val totalCount = intent.getIntExtra("totalCount", 0)
+        //val filePath = intent.getStringExtra("filePath")
+        //if (index)
 
         img1 = findViewById(R.id.img1)
         img2 = findViewById(R.id.img2)
@@ -60,8 +64,6 @@ class AddPhotoActivity : AppCompatActivity() {
         img5 = findViewById(R.id.img5)
         img6 = findViewById(R.id.img6)
 
-        //cameraDialog = Dialog(this,R.style.AlertDialogWindow)
-        //cameraBuilder = AlertDialog.Builder(this)
         //1、使用Dialog、设置style
         cameraDialog = Dialog(this,R.style.AlertDialogWindow)
         //2、设置布局
@@ -69,23 +71,19 @@ class AddPhotoActivity : AppCompatActivity() {
         cameraDialog.setContentView(view)
         val cameraWindow = cameraDialog.window
         cameraWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-        cameraWindow!!.setGravity(Gravity.BOTTOM)
+        cameraWindow.setGravity(Gravity.BOTTOM)
         //设置对话框大小
         cameraWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-
-        //val inflater = this.layoutInflater
-        //cameraView = inflater.inflate(R.layout.alertdialog_choose_resources, null, false)
-        //cameraBuilder!!.setView(cameraView)
-        //cameraBuilder!!.setCancelable(true)
-        //cameraDialog = cameraBuilder!!.create()
-        //getPicture()
-
-        val photoUri = Uri.fromFile(File(mFilePath)) // 传递路径  
 
         val imgList: ArrayList<ImageView> = arrayListOf(img1, img2, img3, img4, img5, img6)
         for (i in 0 until imgList.size step 1) {
             imageList.add(imgList[i])
         }
+
+        if (index != 0) {
+            delPicture(index, totalCount)
+        }
+
         for (i in 0 until imageList.size step 1) {
             imageList[i].setOnClickListener {
                 if (imageList[i].drawable != null) {
@@ -95,6 +93,14 @@ class AddPhotoActivity : AppCompatActivity() {
                         val btnFromAlbum = cameraDialog.findViewById<Button>(R.id.btnFromAlbum)
                         val btnCancel = cameraDialog.findViewById<Button>(R.id.btnCancel)
                         btnTakePhoto.setOnClickListener {
+                            //Environment.getExternalStorageDirectory().path // 获取SD卡路径
+                            val file = File(Environment.getExternalStorageDirectory().path + "/Sany")
+                            if (!file.exists()) {
+                                file.mkdir()
+                            }
+                            mFilePath = file.path
+                            mFilePath = "$mFilePath/temp_$photoIndex.png"// 指定路径
+                            val photoUri = Uri.fromFile(File(mFilePath)) // 传递路径 
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)// 更改系统默认存储路径  
                             startActivityForResult(intent, REQUEST_CAMERA)
@@ -119,18 +125,6 @@ class AddPhotoActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPicture() {
-        //获取字符串
-        val sPreferences = getSharedPreferences("Picture", Context.MODE_PRIVATE)
-        val imageBase64 = sPreferences.getString("cameraImage", "")
-        //把字符串解码成Bitmap对象
-        val byte64 = Base64.decode(imageBase64, 0)
-        val bais = ByteArrayInputStream(byte64)
-        val bitmap = BitmapFactory.decodeStream(bais)
-        //显示图片
-        img1.setImageBitmap(bitmap)
-    }
-
     /**
      * @description 跳转照片详情页面
      * @author Felix J
@@ -138,34 +132,12 @@ class AddPhotoActivity : AppCompatActivity() {
      */
     private fun toEveryActivity(index: Int) {
         val intent = Intent(this@AddPhotoActivity, EveryPictureActivity::class.java)
-        intentBitmap()
-        //BitmapFactory.decodeResource(resources, R.drawable)
         intent.putExtra("index", index)
-        var totalCount = 0
-        for (i in 0 until imageList.size step 1) {
-            if (imageList[i].drawable != null
-                && imageList[i].drawable.current.constantState != resources.getDrawable(R.drawable.icon_add).constantState
-            ) {
-                totalCount++
-            }
-        }
-        intent.putExtra("totalCount", totalCount)
-
+        intent.putExtra("totalCount", photoIndex)
+        var filePath = Environment.getExternalStorageDirectory().path + "/Sany"
+        filePath = filePath + "/temp_" + (index - 1) + ".png"
+        intent.putExtra("filePath", filePath)
         startActivity(intent)
-    }
-
-    //传递bitmap
-    fun intentBitmap() {
-        //把Bitmap转码成字符串
-        val baos = ByteArrayOutputStream()
-        //压缩图片大小
-        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        val imageBase64 = String(Base64.encode(baos.toByteArray(), 0))
-        //把字符串存到SharedPreferences里面
-        val prePicture = getSharedPreferences("everyPicture", Context.MODE_PRIVATE)
-        val editor = prePicture.edit()
-        editor.putString("everyImage", imageBase64)
-        editor.commit()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -177,8 +149,6 @@ class AddPhotoActivity : AppCompatActivity() {
                     try {
                         fis = FileInputStream(mFilePath) // 根据路径获取数据
                         bitmap = BitmapFactory.decodeStream(fis)    //获取图片
-                        //生成缩略图
-                        //bitmap = ImageThumbnail().getImageThumbnail(mFilePath, 50, 50)
                         add(bitmap)
                     } catch (e: FileNotFoundException) {
                         e.printStackTrace()
@@ -206,18 +176,18 @@ class AddPhotoActivity : AppCompatActivity() {
     @TargetApi(19)
     private fun handleImageOnKitKat(data: Intent) {
         var imagePath: String? = null
-        val uri = data.getData()
+        val uri = data.data
         if (DocumentsContract.isDocumentUri(this, uri)) {
             // 如果是document类型的Uri，则通过document id处理
             val docId = DocumentsContract.getDocumentId(uri)
-            if ("com.android.providers.media.documents" == uri!!.getAuthority()) {
+            if ("com.android.providers.media.documents" == uri!!.authority) {
                 val id =
                     docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
                 // 解析出数字格式的id
                 val selection = MediaStore.Images.Media._ID + "=" + id
                 imagePath =
                     getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection)
-            } else if ("com.android.providers.downloads.documents" == uri!!.getAuthority()) {
+            } else if ("com.android.providers.downloads.documents" == uri.authority) {
                 val contentUri = ContentUris.withAppendedId(
                     Uri.parse("content: //downloads/public_downloads"),
                     java.lang.Long.valueOf(docId)
@@ -250,10 +220,10 @@ class AddPhotoActivity : AppCompatActivity() {
         // 通过Uri和selection来获取真实的图片路径
         val cursor = contentResolver.query(uri, null, selection, null, null)
         if (cursor != null) {
-            if (cursor!!.moveToFirst()) {
-                path = cursor!!.getString(cursor!!.getColumnIndex(MediaStore.Images.Media.DATA))
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
             }
-            cursor!!.close()
+            cursor.close()
         }
         return path
     }
@@ -274,7 +244,9 @@ class AddPhotoActivity : AppCompatActivity() {
      * @time 2019/11/8 10:11
      */
     private fun add(bitmap: Bitmap) {
+        photoIndex = 0
         for (i in 0 until imageList.size step 1) {
+            photoIndex++
             if (imageList[i].drawable.current.constantState == resources.getDrawable(R.drawable.icon_add).constantState) {
                 imageList[i].setImageBitmap(bitmap)
                 if (i != imageList.size - 1) {
@@ -282,6 +254,18 @@ class AddPhotoActivity : AppCompatActivity() {
                     break
                 }
             }
+        }
+    }
+
+    private fun delPicture(index: Int, totalCount: Int) {
+        var filePath = Environment.getExternalStorageDirectory().path + "/Sany"
+        for (i in 0 until totalCount step 1) {
+            val mfilePath = "$filePath/temp_$i.png"
+            ImageUtil.setPicture(mfilePath, imageList[i])
+        }
+        imageList[index - 1].setImageResource(R.drawable.icon_add)
+        if (index != imageList.size) {
+            imageList[index].setImageDrawable(null)
         }
     }
 }

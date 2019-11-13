@@ -1,17 +1,15 @@
 package com.wisdom.camerademo
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Base64
 import android.widget.ImageView
 import android.widget.TextView
-import com.wisdom.camerademo.AddPhotoActivity
-import com.wisdom.camerademo.R
-import java.io.ByteArrayInputStream
+import util.ImageUtil
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.IOException
 
 /**
  *@description:
@@ -30,34 +28,26 @@ class EveryPictureActivity : AppCompatActivity() {
 
         val index = intent.getIntExtra("index", 0)
         val totalCount = intent.getIntExtra("totalCount", 0)
+        val filePath = intent.getStringExtra("filePath")
         imgDel = findViewById(R.id.mRightIv)
         imgDel.setImageResource(R.drawable.icon_rubbish)
 
         txtIndex = findViewById(R.id.mTitleTv)
         txtIndex.text = "$index/$totalCount"
         img = findViewById(R.id.img)
-        val delete = findViewById<ImageView>(R.id.mRightIv)
-        delete.setOnClickListener {
+        val btnDel = findViewById<ImageView>(R.id.mRightIv)
+        btnDel.setOnClickListener {
             //toAddPhotoActivity()
+            returnToAddPhotoActivity(index, filePath, totalCount)
         }
-        getPicture()
-
+        ImageUtil.setPicture(filePath, img)
     }
 
-    private fun getPicture() {
-        //获取字符串
-        val sPreferences = getSharedPreferences("everyPicture", Context.MODE_PRIVATE)
-        val imageBase64 = sPreferences.getString("everyImage", "")
-        //把字符串解码成Bitmap对象
-        val byte64 = Base64.decode(imageBase64, 0)
-        val bais = ByteArrayInputStream(byte64)
-        val bitmap = BitmapFactory.decodeStream(bais)
-        //显示图片
-        img.setImageBitmap(bitmap)
-    }
-
-    private fun returnToAddPhotoActivity() {
+    private fun returnToAddPhotoActivity(index: Int, filePath: String, totalCount: Int) {
         val intent = Intent(this@EveryPictureActivity, AddPhotoActivity::class.java)
+        intent.putExtra("index", index)
+        intent.putExtra("filePath", filePath)
+        intent.putExtra("totalCount", totalCount)
         startActivity(intent)
     }
 }

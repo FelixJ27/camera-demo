@@ -2,6 +2,7 @@ package com.wisdom.camerademo
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Button
 import android.widget.MediaController
+import android.widget.Toast
 import android.widget.VideoView
 import java.io.File
 
@@ -27,6 +29,7 @@ class AddVideoActivity : AppCompatActivity() {
     private lateinit var vid3: VideoView
     private val videoList: ArrayList<VideoView> = arrayListOf()
     private var durationList = arrayListOf<Int>()
+    private var videoCount: Int = 0
     private val REQUEST_CAMERA = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,18 +50,28 @@ class AddVideoActivity : AppCompatActivity() {
             }
 
 
-            videoList[i].setOnPreparedListener{
+            videoList[i].setOnPreparedListener {
+                /*durationList.add(videoList[i].duration)
+                Toast.makeText(this, durationList[i].toString(), Toast.LENGTH_LONG).show()*/
             }
         }
 
-
-        mFilePath = Environment.getExternalStorageDirectory().path // 获取SD卡路径
-        mFilePath = "$mFilePath/temp.3gp"// 指定路径
-        val photoUri = Uri.fromFile(File(mFilePath)) // 传递路径  
-        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)// 更改系统默认存储路径  
+        //添加视频
         btnAdd.setOnClickListener {
-            startActivityForResult(intent, REQUEST_CAMERA)
+            if (videoCount < 3) {
+                val file = File(Environment.getExternalStorageDirectory().path + "/Sany")
+                if (!file.exists()) {
+                    file.mkdir()
+                }
+                mFilePath = file.path
+                mFilePath = "$mFilePath/temp_$videoCount.3gp"// 指定路径
+                val photoUri = Uri.fromFile(File(mFilePath)) // 传递路径  
+                val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)// 更改系统默认存储路径  
+                startActivityForResult(intent, REQUEST_CAMERA)
+            } else {
+                Toast.makeText(this, "视频数量已满3个，无法继续添加视频", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -72,15 +85,10 @@ class AddVideoActivity : AppCompatActivity() {
     }
 
     private fun add() {
-        for (i in 0 until videoList.size step 1) {
-            // videoList[i].setOnPreparedListener {
-            if (videoList[i].duration == -1) {
-                //videoList[i].setVideoURI(Uri.parse(mFilePath))
-                videoList[i].setVideoPath(mFilePath)
-                videoList[i].setMediaController(MediaController(this@AddVideoActivity))
-                videoList[i].start()
-                break
-            }
+        videoList[videoCount].setVideoPath(mFilePath)
+        videoList[videoCount].setMediaController(MediaController(this@AddVideoActivity))
+        if (videoCount < 3) {
+            videoCount++
         }
     }
 
@@ -92,10 +100,8 @@ class AddVideoActivity : AppCompatActivity() {
             if (videoList[i].drawableState != null) {
                 totalCount++
             }
-
         }
         intent.putExtra("totalCount", totalCount)
         startActivity(intent)
     }
-
 }
