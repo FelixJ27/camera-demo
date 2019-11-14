@@ -25,6 +25,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import util.ImageUtil
 import java.io.*
+import java.nio.file.Files
 
 /**
  *@description: 添加照片Activity
@@ -46,7 +47,6 @@ class AddPhotoActivity : AppCompatActivity() {
     private val SELECT_PHOTO = 0
     private lateinit var cameraDialog: Dialog
     private var photoIndex = 0
-    private var preparedPictureList: ArrayList<String> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +54,6 @@ class AddPhotoActivity : AppCompatActivity() {
 
         val index = intent.getIntExtra("index", 0)
         val totalCount = intent.getIntExtra("totalCount", 0)
-        //val filePath = intent.getStringExtra("filePath")
-        //if (index)
 
         img1 = findViewById(R.id.img1)
         img2 = findViewById(R.id.img2)
@@ -65,15 +63,21 @@ class AddPhotoActivity : AppCompatActivity() {
         img6 = findViewById(R.id.img6)
 
         //1、使用Dialog、设置style
-        cameraDialog = Dialog(this,R.style.AlertDialogWindow)
+        cameraDialog = Dialog(this, R.style.AlertDialogWindow)
         //2、设置布局
-        val view = View.inflate(this,R.layout.alertdialog_choose_resources,null)
+        val view = View.inflate(this, R.layout.alertdialog_choose_resources, null)
         cameraDialog.setContentView(view)
         val cameraWindow = cameraDialog.window
-        cameraWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+        cameraWindow!!.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         cameraWindow.setGravity(Gravity.BOTTOM)
         //设置对话框大小
-        cameraWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+        cameraWindow.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
 
         val imgList: ArrayList<ImageView> = arrayListOf(img1, img2, img3, img4, img5, img6)
         for (i in 0 until imgList.size step 1) {
@@ -94,12 +98,13 @@ class AddPhotoActivity : AppCompatActivity() {
                         val btnCancel = cameraDialog.findViewById<Button>(R.id.btnCancel)
                         btnTakePhoto.setOnClickListener {
                             //Environment.getExternalStorageDirectory().path // 获取SD卡路径
-                            val file = File(Environment.getExternalStorageDirectory().path + "/Sany")
+                            val file =
+                                File(Environment.getExternalStorageDirectory().path + "/Sany")
                             if (!file.exists()) {
                                 file.mkdir()
                             }
                             mFilePath = file.path
-                            mFilePath = "$mFilePath/temp_$photoIndex.png"// 指定路径
+                            mFilePath = "$mFilePath/temp_$photoIndex.jpg"// 指定路径
                             val photoUri = Uri.fromFile(File(mFilePath)) // 传递路径 
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)// 更改系统默认存储路径  
@@ -123,21 +128,6 @@ class AddPhotoActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    /**
-     * @description 跳转照片详情页面
-     * @author Felix J
-     * @time 2019/11/8 10:12
-     */
-    private fun toEveryActivity(index: Int) {
-        val intent = Intent(this@AddPhotoActivity, EveryPictureActivity::class.java)
-        intent.putExtra("index", index)
-        intent.putExtra("totalCount", photoIndex)
-        var filePath = Environment.getExternalStorageDirectory().path + "/Sany"
-        filePath = filePath + "/temp_" + (index - 1) + ".png"
-        intent.putExtra("filePath", filePath)
-        startActivity(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -171,6 +161,21 @@ class AddPhotoActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * @description 跳转照片详情页面
+     * @author Felix J
+     * @time 2019/11/8 10:12
+     */
+    private fun toEveryActivity(index: Int) {
+        val intent = Intent(this@AddPhotoActivity, EveryPictureActivity::class.java)
+        intent.putExtra("index", index)
+        intent.putExtra("totalCount", photoIndex)
+        var filePath = Environment.getExternalStorageDirectory().path + "/Sany"
+        filePath = filePath + "/temp_" + (index - 1) + ".jpg"
+        intent.putExtra("filePath", filePath)
+        startActivity(intent)
     }
 
     @TargetApi(19)
@@ -232,6 +237,16 @@ class AddPhotoActivity : AppCompatActivity() {
         if (imagePath != null) {
             val bitmap = BitmapFactory.decodeFile(imagePath)
             //imageView!!.setImageBitmap(bitmap)
+            photoIndex = 0
+            for (i in 0 until imageList.size step 1) {
+                photoIndex++
+                if (imageList[i].drawable.current.constantState == resources.getDrawable(R.drawable.icon_add).constantState) {
+                    photoIndex -= 1
+                    break
+                }
+            }
+            val destFilePath = Environment.getExternalStorageDirectory().path + "/Sany/temp_" + photoIndex + ".jpg"
+            ImageUtil.copyFile(imagePath, destFilePath)
             add(bitmap)
         } else {
             Toast.makeText(this, "获取相册图片失败", Toast.LENGTH_SHORT).show()
@@ -257,11 +272,16 @@ class AddPhotoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * @description 删除照片
+     * @author Felix J
+     * @time 2019/11/14 14:49
+     */
     private fun delPicture(index: Int, totalCount: Int) {
         var filePath = Environment.getExternalStorageDirectory().path + "/Sany"
         for (i in 0 until totalCount step 1) {
-            val mfilePath = "$filePath/temp_$i.png"
-            ImageUtil.setPicture(mfilePath, imageList[i])
+            val mFilePath = "$filePath/temp_$i.jpg"
+            ImageUtil.setPicture(mFilePath, imageList[i])
         }
         imageList[index - 1].setImageResource(R.drawable.icon_add)
         if (index != imageList.size) {

@@ -4,9 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.ThumbnailUtils
 import android.widget.ImageView
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
+import java.io.*
+import android.util.Log
+
 
 /**
  *@description: 图像处理util
@@ -73,6 +73,56 @@ class ImageUtil {
                 }
             }
         }
-    }
 
+        /**
+         * @description 复制文件
+         * @author Felix J
+         * @time 2019/11/14 15:04
+         */
+        fun copyFile(srcFilePath: String, destFilePath: String): Boolean {
+            try {
+                val oldFile = File(srcFilePath)
+                if (!oldFile.exists()) {
+                    Log.e("--Method--", "copyFile:  oldFile not exist.")
+                    return false
+                } else if (!oldFile.isFile) {
+                    Log.e("--Method--", "copyFile:  oldFile not file.")
+                    return false
+                } else if (!oldFile.canRead()) {
+                    Log.e("--Method--", "copyFile:  oldFile cannot read.")
+                    return false
+                }
+
+                /* 如果不需要打log，可以使用下面的语句
+                if (!oldFile.exists() || !oldFile.isFile() || !oldFile.canRead()) {
+                    return false;
+                }
+                */
+
+                val fileInputStream = FileInputStream(srcFilePath)
+                val fileOutputStream = FileOutputStream(destFilePath)
+                val buffer = ByteArray(1024)
+                var byteRead: Int
+                do {
+                    byteRead = fileInputStream.read(buffer)
+                    if (byteRead != -1) {
+                        fileOutputStream.write(buffer, 0, byteRead)
+                    }else{
+                        break
+                    }
+                } while (true)
+               /* while (-1 != (byteRead = fileInputStream.read(buffer))) {
+                    fileOutputStream.write(buffer, 0, byteRead)
+                }*/
+                fileInputStream.close()
+                fileOutputStream.flush()
+                fileOutputStream.close()
+                return true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
+            }
+
+        }
+    }
 }

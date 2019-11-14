@@ -1,15 +1,11 @@
 package com.wisdom.camerademo
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import util.ImageUtil
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
 
 /**
  *@description:
@@ -24,7 +20,7 @@ class EveryPictureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_everyone)
+        setContentView(R.layout.activity_every_picture)
 
         val index = intent.getIntExtra("index", 0)
         val totalCount = intent.getIntExtra("totalCount", 0)
@@ -37,7 +33,6 @@ class EveryPictureActivity : AppCompatActivity() {
         img = findViewById(R.id.img)
         val btnDel = findViewById<ImageView>(R.id.mRightIv)
         btnDel.setOnClickListener {
-            //toAddPhotoActivity()
             returnToAddPhotoActivity(index, filePath, totalCount)
         }
         ImageUtil.setPicture(filePath, img)

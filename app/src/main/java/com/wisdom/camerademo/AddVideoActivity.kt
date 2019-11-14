@@ -1,5 +1,6 @@
 package com.wisdom.camerademo
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaPlayer
@@ -8,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.Button
-import android.widget.MediaController
-import android.widget.Toast
-import android.widget.VideoView
+import android.view.MotionEvent
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import java.io.File
 
 /**
@@ -27,8 +28,14 @@ class AddVideoActivity : AppCompatActivity() {
     private lateinit var vid1: VideoView
     private lateinit var vid2: VideoView
     private lateinit var vid3: VideoView
+    private lateinit var linearLayout1: LinearLayout
+    private lateinit var linearLayout2: LinearLayout
+    private lateinit var linearLayout3: LinearLayout
     private val videoList: ArrayList<VideoView> = arrayListOf()
     private var durationList = arrayListOf<Int>()
+    private lateinit var delAlertDialog: AlertDialog
+    private var delBuilder: AlertDialog.Builder? = null
+    private lateinit var delView: View
     private var videoCount: Int = 0
     private val REQUEST_CAMERA = 1
 
@@ -39,22 +46,51 @@ class AddVideoActivity : AppCompatActivity() {
         vid1 = findViewById(R.id.vid1)
         vid2 = findViewById(R.id.vid2)
         vid3 = findViewById(R.id.vid3)
+        linearLayout1 = findViewById(R.id.ll1)
+        linearLayout2 = findViewById(R.id.ll2)
+        linearLayout3 = findViewById(R.id.ll3)
+        val linearLayoutList = arrayListOf(linearLayout1, linearLayout2, linearLayout3)
         val vidList = arrayListOf(vid1, vid2, vid3)
         for (i in 0 until vidList.size step 1) {
             videoList.add(vidList[i])
         }
 
-        for (i in 0 until videoList.size step 1) {
-            videoList[i].setOnClickListener {
-                toEveryVideoActivity(i)
-            }
+        delBuilder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        delView = inflater.inflate(R.layout.alertdialog_del, null, false)
+        delBuilder!!.setView(delView)
+        delBuilder!!.setCancelable(false)
+        delAlertDialog = delBuilder!!.create()
 
+        for (i in 0 until videoList.size step 1) {
 
             videoList[i].setOnPreparedListener {
-                /*durationList.add(videoList[i].duration)
-                Toast.makeText(this, durationList[i].toString(), Toast.LENGTH_LONG).show()*/
+                durationList.add(videoList[i].duration)
+                /*Toast.makeText(this, durationList[i].toString(), Toast.LENGTH_LONG).show()*/
+                //initVideoView(durationList)
             }
+
+            //长按删除视频
+            linearLayoutList[i].setOnLongClickListener {
+                //Toast.makeText(this, "长按事件", Toast.LENGTH_LONG).show()
+                delAlertDialog.show()
+                delView.findViewById<Button>(R.id.btnSure).setOnClickListener {
+                    delVideo(i)
+                    delAlertDialog.dismiss()
+                }
+                delView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+                    delAlertDialog.dismiss()
+                }
+                false
+            }
+
+            /*videoList[i].setOnTouchListener { v, event ->
+                Toast.makeText(this, "setOnTouchListener事件", Toast.LENGTH_LONG).show()
+                false
+            }*/
         }
+
+        initVideoView()
 
         //添加视频
         btnAdd.setOnClickListener {
@@ -84,7 +120,34 @@ class AddVideoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * @description 删除视频
+     * @author Felix J
+     * @time 2019/11/14 14:21
+     */
+    private fun delVideo(index: Int) {
+        videoList[index].setVideoURI(null)
+        videoCount--
+    }
+
+    /**
+     * @description 初始化VideoView
+     * @author Felix J
+     * @time 2019/11/14 11:38
+     */
+    private fun initVideoView() {
+        for (i in 0 until videoList.size step 1) {
+            videoList[i].visibility = View.GONE
+        }
+    }
+
+    /**
+     * @descriptiont 添加视频
+     * @author Felix J
+     * @time 2019/11/14 11:38
+     */
     private fun add() {
+        videoList[videoCount].visibility = View.VISIBLE
         videoList[videoCount].setVideoPath(mFilePath)
         videoList[videoCount].setMediaController(MediaController(this@AddVideoActivity))
         if (videoCount < 3) {
@@ -92,16 +155,5 @@ class AddVideoActivity : AppCompatActivity() {
         }
     }
 
-    private fun toEveryVideoActivity(index: Int) {
-        val intent = Intent(this@AddVideoActivity, EveryVideoActivity::class.java)
-        intent.putExtra("index", index)
-        var totalCount = 0
-        for (i in 0 until videoList.size step 1) {
-            if (videoList[i].drawableState != null) {
-                totalCount++
-            }
-        }
-        intent.putExtra("totalCount", totalCount)
-        startActivity(intent)
-    }
+
 }
