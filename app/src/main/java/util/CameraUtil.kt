@@ -13,11 +13,11 @@ import android.util.Log
  *@author: Felix J
  *@time: 2019/11/13 15:47
  */
-class ImageUtil {
+class CameraUtil {
 
     companion object {
         /**
-         * @description 生成错略图
+         * @description 生成缩略图
          * @author Felix J
          * @time 2019/11/13 15:48
          */
@@ -53,15 +53,25 @@ class ImageUtil {
         }
 
         /**
-         * @description 获取照片
+         * @description 设置照片
          * @author Felix J
          * @time 2019/11/13 15:52
          */
-        fun setPicture(mFilePath: String, imageView: ImageView) {
+        fun setPicture(mFilePath: String, imageView: ImageView, reqCode: Int) {
             var fis: FileInputStream? = null
             try {
                 fis = FileInputStream(mFilePath) // 根据路径获取数据
-                val bitmap = BitmapFactory.decodeStream(fis)
+                //val bitmap = BitmapFactory.decodeStream(fis)
+                //val bos = BufferedOutputStream(FileOutputStream(File(mFilePath)))
+                //bitmap?.compress(Bitmap.CompressFormat.JPEG, 30, bos)
+                val options = BitmapFactory.Options()
+                options.inSampleSize = 2//图片宽高都为原来的二分之一，即图片为原来的四分之一
+                val bitmap: Bitmap
+                bitmap = if (reqCode == 1) {
+                    BitmapFactory.decodeStream(fis, null, options)!!
+                } else {
+                    getImageThumbnail(mFilePath, 80, 80)
+                }
                 imageView.setImageBitmap(bitmap)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
@@ -122,7 +132,6 @@ class ImageUtil {
                 e.printStackTrace()
                 return false
             }
-
         }
     }
 }

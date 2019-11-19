@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.content.Intent
 import android.os.Environment
+import android.widget.ImageView
 
 
 class MainActivity : AppCompatActivity() {
@@ -12,10 +13,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnVideo: Button
     private lateinit var btnCancel: Button
     private lateinit var mFilePath: String
-
+    private lateinit var mRightIv: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        mRightIv = findViewById(R.id.mRightIv)
+        mRightIv.setImageResource(R.drawable.icon_camera)
 
         mFilePath = Environment.getExternalStorageDirectory().path // 获取SD卡路径
         mFilePath = "$mFilePath/temp.png"// 指定路径

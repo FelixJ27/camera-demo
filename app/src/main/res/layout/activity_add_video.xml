@@ -7,6 +7,11 @@
     android:orientation="vertical"
     tools:context="com.wisdom.camerademo.AddVideoActivity">
 
+    <util.HeaderBar
+        style="@style/MatchWrap"
+        app:isRightShow="false"
+        app:isShowBack="true" />
+
     <Button
         android:id="@+id/btnAdd"
         android:layout_width="match_parent"
@@ -34,7 +39,17 @@
             <LinearLayout
                 android:id="@+id/ll1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtVid1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="视频1"
+                    android:textSize="@dimen/text_size" />
+
                 <VideoView
                     android:id="@+id/vid1"
                     android:layout_width="match_parent"
@@ -45,7 +60,17 @@
             <LinearLayout
                 android:id="@+id/ll2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtVid2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="视频2"
+                    android:textSize="@dimen/text_size" />
+
                 <VideoView
                     android:id="@+id/vid2"
                     android:layout_width="match_parent"
@@ -56,13 +81,44 @@
             <LinearLayout
                 android:id="@+id/ll3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtVid3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="视频3"
+                    android:textSize="@dimen/text_size" />
+
                 <VideoView
                     android:id="@+id/vid3"
                     android:layout_width="match_parent"
                     android:layout_height="500dp"
                     android:layout_margin="@dimen/common_margin" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/uploadImageResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip" />
+
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="上传"
+                android:textSize="@dimen/text_size" />
 
         </LinearLayout>
     </ScrollView>
