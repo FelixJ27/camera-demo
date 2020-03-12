@@ -18,7 +18,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wisdom.camerademo.AddPhotoActivity;
 
 /**
  * 上传工具类
@@ -79,61 +78,63 @@ public class UploadUtil {
      *
      * @param filePath   需要上传的文件的路径
      * @param fileKey    在网页上<input type=file name=xxx/> xxx就是这里的fileKey
-     * @param RequestURL 请求的URL
+     * @param requestURL 请求的URL
      */
-    public void uploadFile(String filePath, String fileKey, String RequestURL,
+    public Object uploadFile(String filePath, String fileKey, String requestURL,
                            Map<String, String> param, Context context) {
+        Object path = null;
         if (filePath == null) {
             sendMessage(UPLOAD_FILE_NOT_EXISTS_CODE, "文件不存在");
-            return;
         }
         try {
             File file = new File(filePath);
-            uploadFile(file, fileKey, RequestURL, param, context);
+            path = uploadFile(file, fileKey, requestURL, param, context);
         } catch (Exception e) {
             sendMessage(UPLOAD_FILE_NOT_EXISTS_CODE, "文件不存在");
             e.printStackTrace();
-            return;
         }
+        return path;
     }
 
     /**
      * android上传文件到服务器
-     *
-     * @param file       需要上传的文件
+     *  @param file       需要上传的文件
      * @param fileKey    在网页上<input type=file name=xxx/> xxx就是这里的fileKey
-     * @param RequestURL 请求的URL
+     * @param requestURL 请求的URL
+     * @return
      */
-    public void uploadFile(final File file, final String fileKey,
-                           final String RequestURL, final Map<String, String> param, final Context context) {
+    public Object uploadFile(final File file, final String fileKey,
+                             final String requestURL, final Map<String, String> param, final Context context) {
+        Object path = null;
         if (file == null || (!file.exists())) {
             sendMessage(UPLOAD_FILE_NOT_EXISTS_CODE, "文件不存在");
-            return;
         }
 
-        Log.i(TAG, "请求的URL=" + RequestURL);
+        Log.i(TAG, "请求的URL=" + requestURL);
         Log.i(TAG, "请求的fileName=" + file.getName());
         Log.i(TAG, "请求的fileKey=" + fileKey);
         new Thread(new Runnable() {  //开启线程上传文件
             @Override
             public void run() {
                 Looper.prepare();
-                toUploadFile(file, fileKey, RequestURL, param, context);
+                toUploadFile(file, fileKey, requestURL, param, context);
                 Looper.loop();
             }
         }).start();
+        //path[0] = toUploadFile(file, fileKey, requestURL, param, context);
+        return path;
     }
 
-    private void toUploadFile(File file, String fileKey, String RequestURL,
+    public Object toUploadFile(File file, String fileKey, String requestURL,
                               Map<String, String> param, Context context) {
         String result = null;
         requestTime = 0;
-
+        Object path = null;
         long requestTime = System.currentTimeMillis();
         long responseTime = 0;
 
         try {
-            URL url = new URL(RequestURL);
+            URL url = new URL(requestURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(readTimeOut);
             conn.setConnectTimeout(connectTimeout);
@@ -203,7 +204,6 @@ public class UploadUtil {
                 onUploadProcessListener.onUploadProcess(curLen);
             }
             is.close();
-
             dos.write(LINE_END.getBytes());
             byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
             dos.write(end_data);
@@ -227,27 +227,29 @@ public class UploadUtil {
                 }
                 result = sb1.toString();
                 ObjectMapper objectMapper = new ObjectMapper();
-                DataView dataView = objectMapper.readValue(result, DataView.class);
+//                DataView dataView = objectMapper.readValue(result, DataView.class);
+                RemoteResult remoteResult = objectMapper.readValue(result, RemoteResult.class);
+                String resp = "";
+                if ("success".equals(remoteResult.getMessage())) {
+                    resp = "上传成功";
+                    path = remoteResult.getData();
+                }
                 Log.e(TAG, "result : " + result);
                 sendMessage(UPLOAD_SUCCESS_CODE, "上传结果："
-                        + dataView.getMessage());
-
-                Toast.makeText(context, dataView.getMessage(), Toast.LENGTH_LONG).show();
-                return;
+                        + remoteResult.getMessage());
+                Toast.makeText(context, resp, Toast.LENGTH_LONG).show();
             } else {
                 Log.e(TAG, "request error");
                 sendMessage(UPLOAD_SERVER_ERROR_CODE, "上传失败：code=" + res);
-                return;
             }
         } catch (MalformedURLException e) {
             sendMessage(UPLOAD_SERVER_ERROR_CODE, "上传失败：error=" + e.getMessage());
             e.printStackTrace();
-            return;
         } catch (IOException e) {
             sendMessage(UPLOAD_SERVER_ERROR_CODE, "上传失败：error=" + e.getMessage());
             e.printStackTrace();
-            return;
         }
+        return path;
     }
 
     /**

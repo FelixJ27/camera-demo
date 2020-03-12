@@ -100,7 +100,7 @@ class AddVideoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
         /***
          * 这里的这个URL是我服务器的javaEE环境URL
          */
-        private const val requestURL = "http://192.168.89.66:8080/wms/services/PdaRestService/uploadVideo"
+        private const val requestURL = "http://192.168.89.66:8081/wms/services/PdaRestService/uploadFile"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

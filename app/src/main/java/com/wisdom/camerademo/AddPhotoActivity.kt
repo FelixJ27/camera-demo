@@ -16,13 +16,13 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.Volley
 import util.CameraUtil
 import util.SharedPreferencesUtils
+import util.UploadFile
 import util.UploadUtil
 import java.io.*
 import java.util.HashMap
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 /**
  *@description: 添加照片Activity
@@ -42,7 +42,6 @@ class AddPhotoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
     private lateinit var progressBar: ProgressBar
     private lateinit var btnSubmit: Button
     private val imageList: ArrayList<ImageView> = arrayListOf()
-    protected lateinit var requestQueue: RequestQueue
     private lateinit var cameraDialog: Dialog
     private var photoIndex = 0
     private lateinit var uploadImageResult: TextView
@@ -104,7 +103,8 @@ class AddPhotoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
         /***
          * 这里的这个URL是我服务器的javaEE环境URL
          */
-        private const val requestURL = "http://192.168.89.66:8080/wms/services/PdaRestService/uploadPicture"
+        private const val requestURL =
+            "http://192.168.1.108:8081/wms/services/PdaRestService/uploadFile"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +113,6 @@ class AddPhotoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
 
         val index = intent.getIntExtra("index", 0)
         val totalCount = intent.getStringExtra("totalCount")
-        requestQueue = Volley.newRequestQueue(this)
         //val totalCount = intent.getIntExtra("totalCount", 0)
         img1 = findViewById(R.id.img1)
         img2 = findViewById(R.id.img2)
@@ -201,6 +200,7 @@ class AddPhotoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
         btnSubmit.setOnClickListener {
             if (photoIndex != 0) {
                 handler.sendEmptyMessage(TO_UPLOAD_FILE)
+                //toUploadFile2()
             }
         }
     }
@@ -222,14 +222,6 @@ class AddPhotoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
                         handleImageBeforeKitKat(data!!)
                     }
                 }
-                /*REQUEST_PHOTO_DETAIL -> {
-                    *//*val index = intent.getIntExtra("index", 0)
-                    val totalCount = intent.getStringExtra("totalCount")
-                    if (index != 0) {
-                        delPicture(index, totalCount)
-                    }*//*
-
-                }*/
             }
         }
     }
@@ -260,20 +252,24 @@ class AddPhotoActivity : AppCompatActivity(), UploadUtil.OnUploadProcessListener
     private fun toUploadFile() {
         uploadImageResult.text = "正在上传中..."
         progressDialog.setMessage("正在上传文件...")
-        progressDialog.show()
+        //progressDialog.show()
         val fileKey = "pic"
         val uploadUtil = UploadUtil.getInstance()
         uploadUtil.setOnUploadProcessListener(this)  //设置监听器监听上传状态
-
         val params = HashMap<String, String>()
         params["orderId"] = "11111"
+        //val uploadParam = UploadParam(orderNum = "000")
+
         for (i in 0 until photoIndex step 1) {
+
             picPath = Environment.getExternalStorageDirectory().path + "/Sany/temp_" + i + ".jpg"
-            uploadUtil.uploadFile(
+            /*uploadUtil.uploadFile(
                 picPath, fileKey,
                 requestURL, params,
                 this
-            )
+            )*/
+            val file = File(picPath)
+            UploadFile.toUploadFile(file)
         }
     }
 
